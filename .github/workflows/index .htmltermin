@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuminaBook | Modernes Terminmanagement</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #667eea;
+            --primary-light: #8e9ffa;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --accent-light: #f6adf9;
+            --success: #4cd964;
+            --warning: #ffcc00;
+            --error: #ff3b30;
+            --text-dark: #2c3e50;
+            --text-light: #7f8c8d;
+            --bg-light: #f8f9fa;
+            --bg-white: #ffffff;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Animierte Hintergrund-Elemente */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .floating-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-light), var(--accent-light));
+            opacity: 0.1;
+            animation: float 25s infinite linear;
+            filter: blur(20px);
+        }
+        
+        .floating-circle:nth-child(1) {
+            width: 300px;
+            height: 300px;
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+        
+        .floating-circle:nth-child(2) {
+            width: 200px;
+            height: 200px;
+            top: 60%;
+            left: 80%;
+            animation-delay: 5s;
+            background: linear-gradient(135deg, var(--accent-light), var(--primary));
+        }
+        
+        .floating-circle:nth-child(3) {
+            width: 150px;
+            height: 150px;
+            top: 20%;
+            left: 75%;
+            animation-delay: 10s;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+        
+        .floating-circle:nth-child(4) {
+            width: 250px;
+            height: 250px;
+            top: 70%;
+            left: 10%;
+            animation-delay: 15s;
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+        }
+        
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            25% { transform: translate(100px, 50px) rotate(90deg) scale(1.1); }
+            50% { transform: translate(50px, 100px) rotate(180deg) scale(1); }
+            75% { transform: translate(-50px, 75px) rotate(270deg) scale(0.9); }
+            100% { transform: translate(0, 0) rotate(360deg) scale(1); }
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Header mit Logo und Benutzerinfo */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 25px 0;
+            animation: slideDown 0.8s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .logo-3d {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+            animation: logoPulse 4s ease-in-out infinite;
+            position: relative;
+            padding: 10px 20px;
+            border-radius: 15px;
+            background-color: var(--bg-white);
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+        
+        @keyframes logoPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        .logo-subtitle {
+            font-size: 1.1rem;
+            color: var(--primary);
+            font-weight: 500;
+            letter-spacing: 2px;
+            animation: fadeIn 1s ease-out 0.5s both;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: var(--bg-white);
+            padding: 12px 25px;
+            border-radius: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            animation: slideInRight 0.8s ease-out 0.3s both;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            animation: avatarGlow 3s ease-in-out infinite;
+        }
+        
+        @keyframes avatarGlow {
+            0%, 100% { box-shadow: 0 0 0 rgba(102, 126, 234, 0.4); }
+            50% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.6); }
+        }
+        
+        .user-avatar:hover {
+            transform: scale(1.1);
+            animation: none;
+            box-shadow: 0 0 25px rgba(102, 126, 234, 0.7);
+        }
+        
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 1.1rem;
+        }
+        
+        .user-role {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        
+        .user-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .user-action-btn {
+            background: transparent;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .user-action-btn:hover {
+            background: rgba(102, 126, 234, 0.1);
+            transform: scale(1.1);
+        }
+        
+        .logout-btn {
+            color: var(--error);
+        }
+        
+        /* Hauptinhalt */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+            animation: contentAppear 1s ease-out 0.5s both;
+        }
+        
+        @keyframes contentAppear {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .content-area {
+            background: var(--bg-white);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(102, 126, 234, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .content-area:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .sidebar {
+            background: var(--bg-white);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(102, 126, 234, 0.05);
+            height: fit-content;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .sidebar:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+            padding-bottom: 12px;
+            animation: titleSlide 0.6s ease-out;
+        }
+        
+        @keyframes titleSlide {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        /* Tabs Navigation */
+        .tabs {
+            display: flex;
+            margin-bottom: 30px;
+            background: var(--bg-light);
+            border-radius: 15px;
+            padding: 8px;
+            box-shadow: var(--shadow);
+            flex-wrap: wrap;
+            border: 1px solid rgba(102, 126, 234, 0.05);
+            animation: tabsAppear 0.8s ease-out;
+        }
+        
+        @keyframes tabsAppear {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .tab-button {
+            padding: 14px 24px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            margin: 4px;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tab-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            transition: left 0.6s;
+        }
+        
+        .tab-button:hover::before {
+            left: 100%;
+        }
+        
+        .tab-button.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        /* Tab Inhalte */
+        .tab-content {
+            display: none;
+            animation: contentFadeIn 0.5s ease-out;
+        }
+        
+        @keyframes contentFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Formulare */
+        .form-group {
+            margin-bottom: 25px;
+            animation: formGroupAppear 0.6s ease-out;
+        }
+        
+        @keyframes formGroupAppear {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 1.05rem;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            transition: all 0.3s;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.03);
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            background: var(--bg-white);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1), inset 0 2px 5px rgba(0, 0, 0, 0.03);
+            transform: translateY(-2px);
+        }
+        
+        input::placeholder, textarea::placeholder {
+            color: var(--text-light);
+        }
+        
+        button {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.05rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.6s;
+        }
+        
+        button:hover::before {
+            left: 100%;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .confirmation {
+            background: rgba(76, 217, 100, 0.1);
+            color: var(--success);
+            padding: 18px;
+            border-radius: 12px;
+            margin-top: 20px;
+            display: none;
+            border: 1px solid rgba(76, 217, 100, 0.2);
+            text-align: center;
+            animation: contentFadeIn 0.5s ease-out;
+        }
+        
+        .error {
+            background: rgba(255, 59, 48, 0.1);
+            color: var(--error);
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 20px;
+            display: none;
+            border: 1px solid rgba(255, 59, 48, 0.2);
+            text-align: center;
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        /* Produktbereich */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .product-card {
+            background: var(--bg-white);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            box-shadow: var(--shadow);
+            animation: cardAppear 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        @keyframes cardAppear {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s;
+        }
+        
+        .product-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .product-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .product-card:hover .product-icon {
+            transform: scale(1.2);
+            color: var(--secondary);
+        }
+        
+        .product-title {
+            font-size: 1.3rem;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            text-align: center;
+            transition: color 0.3s;
+        }
+        
+        .product-card:hover .product-title {
+            color: var(--primary);
+        }
+        
+        .product-description {
+            color: var(--text-light);
+            margin-bottom: 20px;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+        
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(102, 126, 234, 0.1);
+            transition: all 0.3s;
+        }
+        
+        .product-card:hover .product-price {
+            transform: scale(1.1);
+        }
+        
+        .product-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* Serviceanfragen */
+        .request-types {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .request-type {
+            flex: 1;
+            min-width: 150px;
+            padding: 20px;
+            background: var(--bg-white);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            box-shadow: var(--shadow);
+            animation: requestTypeAppear 0.6s ease-out;
+        }
+        
+        @keyframes requestTypeAppear {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .request-type:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .request-type.selected {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .request-type i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: block;
+            color: var(--primary);
+            transition: all 0.3s;
+        }
+        
+        .request-type:hover i {
+            transform: scale(1.1);
+            color: var(--secondary);
+        }
+        
+        .request-type.selected i {
+            color: white;
+        }
+        
+        /* Sidebar Inhalte */
+        .sidebar-section {
+            margin-bottom: 30px;
+            animation: sidebarAppear 0.8s ease-out;
+        }
+        
+        @keyframes sidebarAppear {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .sidebar-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .quick-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 15px;
+            background: var(--bg-light);
+            border-radius: 10px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            transition: all 0.3s;
+        }
+        
+        .stat-item:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow);
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .recent-activity {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-light);
+            border-radius: 10px;
+            border-left: 3px solid var(--primary);
+            transition: all 0.3s;
+        }
+        
+        .activity-item:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow);
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 30px;
+            color: var(--text-light);
+            font-size: 0.95rem;
+            background: var(--bg-white);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(102, 126, 234, 0.05);
+            animation: footerAppear 1s ease-out;
+        }
+        
+        @keyframes footerAppear {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Avatar Upload Overlay */
+        .avatar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        
+        .avatar-modal {
+            background: var(--bg-white);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: var(--shadow-hover);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            animation: modalAppear 0.5s ease-out;
+        }
+        
+        @keyframes modalAppear {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .avatar-preview {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            margin: 0 auto 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            animation: avatarPreviewPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes avatarPreviewPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .avatar-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1100px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                order: -1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .top-header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .logo-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .user-info {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .request-type {
+                min-width: 100%;
+            }
+            
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg">
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+    </div>
+    
+    <!-- Avatar Upload Overlay -->
+    <div class="avatar-overlay" id="avatarOverlay">
+        <div class="avatar-modal">
+            <h2><i class="fas fa-user-circle"></i> Profilbild bearbeiten</h2>
+            <div class="avatar-preview" id="avatarPreview">
+                <i class="fas fa-user"></i>
+            </div>
+            <p>Laden Sie ein neues Profilbild hoch oder wählen Sie ein Avatar-Symbol</p>
+            <div class="form-group">
+                <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
+                <button onclick="document.getElementById('avatarUpload').click()">
+                    <i class="fas fa-upload"></i> Bild hochladen
+                </button>
+            </div>
+            <div class="avatar-actions">
+                <button class="confirm-avatar">
+                    <i class="fas fa-check"></i> Speichern
+                </button>
+                <button class="cancel-avatar" style="background: rgba(149, 165, 166, 0.7);">
+                    <i class="fas fa-times"></i> Abbrechen
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="top-header">
+            <div class="logo-container">
+                <div class="logo-3d">LuminaBook</div>
+                <div class="logo-subtitle">MODERNES TERMINMANAGEMENT</div>
+            </div>
+            
+            <div class="user-info" id="userInfo">
+                <div class="user-avatar" id="userAvatar" onclick="openAvatarEditor()">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-details">
+                    <div class="user-name" id="userName">Max Mustermann</div>
+                    <div class="user-role" id="userRole">Premium Kunde</div>
+                </div>
+                <div class="user-actions">
+                    <button class="user-action-btn" title="Profil bearbeiten" onclick="openAvatarEditor()">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="user-action-btn logout-btn" title="Abmelden" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="content-area">
+                <div class="tabs">
+                    <button class="tab-button active" onclick="openTab('booking')">
+                        <i class="fas fa-calendar-alt"></i> Termin buchen
+                    </button>
+                    <button class="tab-button" onclick="openTab('services')">
+                        <i class="fas fa-concierge-bell"></i> Dienstleistungen
+                    </button>
+                    <button class="tab-button" onclick="openTab('request')">
+                        <i class="fas fa-headset"></i> Serviceanfrage
+                    </button>
+                    <button class="tab-button" onclick="openTab('products')">
+                        <i class="fas fa-box-open"></i> Produkte
+                    </button>
+                    <button class="tab-button" onclick="openTab('appointments')">
+                        <i class="fas fa-list"></i> Meine Termine
+                    </button>
+                </div>
+                
+                <div id="booking" class="tab-content active">
+                    <h2 class="section-title"><i class="fas fa-calendar-alt"></i> Termin buchen</h2>
+                    <form id="booking-form">
+                        <div class="form-group">
+                            <label for="service"><i class="fas fa-concierge-bell"></i> Service *</label>
+                            <select id="service" name="service" required onchange="updatePrice()">
+                                <option value="">Bitte wählen</option>
+                                <option value="beratung" data-price="50">Erstberatung - 50€</option>
+                                <option value="reparatur" data-price="80">Reparatur - 80€</option>
+                                <option value="wartung" data-price="60">Wartung - 60€</option>
+                                <option value="installation" data-price="120">Installation - 120€</option>
+                                <option value="support" data-price="40">Technischer Support - 40€</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="booking-date"><i class="fas fa-calendar-day"></i> Datum *</label>
+                                <input type="date" id="booking-date" name="booking-date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="booking-time"><i class="fas fa-clock"></i> Uhrzeit *</label>
+                                <select id="booking-time" name="booking-time" required>
+                                    <option value="">Bitte wählen</option>
+                                    <option value="09:00">09:00 Uhr</option>
+                                    <option value="10:00">10:00 Uhr</option>
+                                    <option value="11:00">11:00 Uhr</option>
+                                    <option value="12:00">12:00 Uhr</option>
+                                    <option value="14:00">14:00 Uhr</option>
+                                    <option value="15:00">15:00 Uhr</option>
+                                    <option value="16:00">16:00 Uhr</option>
+                                    <option value="17:00">17:00 Uhr</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="notes"><i class="fas fa-sticky-note"></i> Anmerkungen</label>
+                            <textarea id="notes" name="notes" rows="4" placeholder="Besondere Anforderungen oder Hinweise..."></textarea>
+                        </div>
+                        
+                        <div class="price-display" style="background: var(--bg-light); padding: 20px; border-radius: 12px; margin-bottom: 20px; text-align: center; border: 1px solid rgba(102, 126, 234, 0.1);">
+                            <h3>Gesamtpreis:</h3>
+                            <div class="price">0€</div>
+                        </div>
+                        
+                        <button type="submit"><i class="fas fa-calendar-check"></i> Termin buchen</button>
+                        
+                        <div id="booking-confirmation" class="confirmation">
+                            <i class="fas fa-check-circle"></i> Termin erfolgreich gebucht!
+                        </div>
+                        
+                        <div id="booking-error" class="error">
+                            <i class="fas fa-exclamation-circle"></i> Bitte melden Sie sich zuerst an, um einen Termin zu buchen.
+                        </div>
+                    </form>
+                </div>
+                
+                <div id="services" class="tab-content">
+                    <h2 class="section-title"><i class="fas fa-concierge-bell"></i> Unsere Dienstleistungen</h2>
+                    <div class="products-grid">
+                        <div class="product-card">
+                            <div class="product-icon">
+                                <i class="fas fa-user-cog"></i>
+                            </div>
+                            <div class="product-title">Erstberatung</div>
+                            <div class="product-description">
+                                Umfassende Analyse Ihrer Anforderungen und Erstellung eines maßgeschneiderten Lösungsplans.
+                            </div>
+                            <div class="product-price">50€</div>
+                            <button><i class="fas fa-calendar-plus"></i> Termin buchen</button>
+                        </div>
+                        
+                        <div class="product-card">
+                            <div class="product-icon">
+                                <i class="fas fa-tools"></i>
+                            </div>
+                            <div class="product-title">Reparatur-Service</div>
+                            <div class="product-description">
+                                Schnelle und zuverlässige Reparatur Ihrer Geräte durch zertifizierte Techniker.
+                            </div>
+                            <div class="product-price">80€</div>
+                            <button><i class="fas fa-calendar-plus"></i> Termin buchen</button>
+                        </div>
+                        
+                        <div class="product-card">
+                            <div class="product-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="product-title">Wartung & Pflege</div>
+                            <div class="product-description">
+                                Regelmäßige Wartung zur Sicherstellung der optimalen Leistung Ihrer Systeme.
+                            </div>
+                            <div class="product-price">60€</div>
+                            <button><i class="fas fa-calendar-plus"></i> Termin buchen</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="request" class="tab-content">
+                    <h2 class="section-title"><i class="fas fa-headset"></i> Serviceanfrage</h2>
+                    <form id="request-form">
+                        <div class="form-group">
+                            <label for="request-type"><i class="fas fa-tags"></i> Art der Anfrage *</label>
+                            <div class="request-types">
+                                <div class="request-type" onclick="selectRequestType('custom')">
+                                    <i class="fas fa-pencil-ruler"></i>
+                                    <div>Individuelle Lösung</div>
+                                </div>
+                                <div class="request-type" onclick="selectRequestType('consulting')">
+                                    <i class="fas fa-chalkboard-teacher"></i>
+                                    <div>Erweiterte Beratung</div>
+                                </div>
+                                <div class="request-type" onclick="selectRequestType('enterprise')">
+                                    <i class="fas fa-building"></i>
+                                    <div>Unternehmenslösung</div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="request-type" name="request-type" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="request-title"><i class="fas fa-heading"></i> Titel der Anfrage *</label>
+                            <input type="text" id="request-title" name="request-title" placeholder="Kurze Beschreibung Ihrer Anfrage" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="request-description"><i class="fas fa-align-left"></i> Detaillierte Beschreibung *</label>
+                            <textarea id="request-description" name="request-description" rows="6" placeholder="Beschreiben Sie Ihre Anfrage so detailliert wie möglich..." required></textarea>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="request-budget"><i class="fas fa-euro-sign"></i> Geschätztes Budget (optional)</label>
+                                <input type="number" id="request-budget" name="request-budget" placeholder="0" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="request-deadline"><i class="fas fa-hourglass-half"></i> Gewünschter Termin (optional)</label>
+                                <input type="date" id="request-deadline" name="request-deadline">
+                            </div>
+                        </div>
+                        
+                        <button type="submit"><i class="fas fa-paper-plane"></i> Anfrage senden</button>
+                        
+                        <div id="request-confirmation" class="confirmation">
+                            <i class="fas fa-check-circle"></i> Ihre Anfrage wurde erfolgreich gesendet! Wir melden uns innerhalb von 24 Stunden bei Ihnen.
+                        </div>
+                    </form>
+                </div>
+                
+                <div id="products" class="tab-content">
+                    <h2 class="section-title"><i class="fas fa-box-open"></i> Unsere Produkte</h2>
+                    <div class="products-grid">
+                        <div class="product-card">
+                            <div class="product-icon">
+                                <i class="fas fa-laptop-code"></i>
+                            </div>
+                            <div class="product-title">Business Software</div>
+                            <div class="product-description">
+                                Professionelle Softwarelösungen für Unternehmen aller Größen. Steigern Sie Effizienz und Produktivität.
+                            </div>
+                            <div class="product-price">Ab 299€</div>
+                            <div class="product-actions">
+                                <button><i class="fas fa-info-circle"></i> Details</button>
+                                <button><i class="fas fa-shopping-cart"></i> Kaufen</button>
+                            </div>
+                        </div>
+                        
+                        <div class="product-card">
+                            <div class="product-icon">
+                                <i class="fas fa-cloud"></i>
+                            </div>
+                            <div class="product-title">Cloud Hosting</div>
+                            <div class="product-description">
+                                Sichere und skalierbare Cloud-Lösungen für Ihre Daten und Anwendungen. 99,9% Verfügbarkeit garantiert.
+                            </div>
+                            <div class="product-price">Ab 19€/Monat</div>
+                            <div class="product-actions">
+                                <button><i class="fas fa-info-circle"></i> Details</button>
+                                <button><i class="fas fa-shopping-cart"></i> Kaufen</button>
+                            </div>
+                        </div>
+                        
+                        <div class="product-card">
+                            <div class="product-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="product-title">Security Suite</div>
+                            <div class="product-description">
+                                Umfassender Schutz für Ihre Systeme vor Cyber-Bedrohungen. Inklusive 24/7 Überwachung.
+                            </div>
+                            <div class="product-price">Ab 149€/Jahr</div>
+                            <div class="product-actions">
+                                <button><i class="fas fa-info-circle"></i> Details</button>
+                                <button><i class="fas fa-shopping-cart"></i> Kaufen</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="appointments" class="tab-content">
+                    <h2 class="section-title"><i class="fas fa-list"></i> Meine Termine</h2>
+                    <div class="appointments-list" id="appointmentsList">
+                        <div class="empty-state" style="text-align: center; padding: 50px; color: var(--text-light);">
+                            <i class="fas fa-calendar-times" style="font-size: 5rem; margin-bottom: 25px; opacity: 0.5; color: var(--primary); animation: pulse 3s infinite;"></i>
+                            <h3>Keine Termine gefunden</h3>
+                            <p>Sie haben noch keine Termine gebucht. Buchen Sie jetzt Ihren ersten Termin!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar">
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title"><i class="fas fa-chart-line"></i> Schnellstatistik</h3>
+                    <div class="quick-stats">
+                        <div class="stat-item">
+                            <span>Aktive Termine:</span>
+                            <span class="stat-value">3</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Ausstehende Zahlungen:</span>
+                            <span class="stat-value">0€</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Service-Anfragen:</span>
+                            <span class="stat-value">2</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Treuepunkte:</span>
+                            <span class="stat-value">150</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title"><i class="fas fa-bell"></i> Letzte Aktivitäten</h3>
+                    <div class="recent-activity">
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div>
+                                <div>Termin bestätigt</div>
+                                <div style="font-size: 0.8rem; color: var(--text-light);">Heute, 10:30</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-file-invoice"></i>
+                            </div>
+                            <div>
+                                <div>Rechnung bezahlt</div>
+                                <div style="font-size: 0.8rem; color: var(--text-light);">Gestern, 14:15</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-headset"></i>
+                            </div>
+                            <div>
+                                <div>Serviceanfrage gesendet</div>
+                                <div style="font-size: 0.8rem; color: var(--text-light);">15. Mai, 09:45</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title"><i class="fas fa-star"></i> Empfohlene Services</h3>
+                    <div class="quick-stats">
+                        <div class="stat-item">
+                            <span>Pro System-Check:</span>
+                            <span class="stat-value">29€</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Data Backup:</span>
+                            <span class="stat-value">15€/Monat</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>24/7 Support:</span>
+                            <span class="stat-value">49€/Monat</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>&copy; 2023 LuminaBook. Alle Rechte vorbehalten.</p>
+            <p>Kontakt: info@luminabook.de | Tel: +49 123 456 789 | <a href="#" style="color: var(--primary);">Impressum</a> | <a href="#" style="color: var(--primary);">Datenschutz</a></p>
+        </footer>
+    </div>
+
+    <script>
+        // Benutzerdaten (normalerweise in einer Datenbank)
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+        let currentBooking = JSON.parse(localStorage.getItem('currentBooking')) || null;
+        let appointments = JSON.parse(localStorage.getItem('appointments')) || [];
+        let requests = JSON.parse(localStorage.getItem('requests')) || [];
+        let selectedRequestType = null;
+        
+        // Tab-Funktionalität
+        function openTab(tabName) {
+            // Alle Tab-Inhalte ausblenden
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+            
+            // Alle Tab-Buttons deaktivieren
+            const tabButtons = document.getElementsByClassName('tab-button');
+            for (let i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].classList.remove('active');
+            }
+            
+            // Gewählten Tab-Inhalt und Button aktivieren
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+        
+        // Buchungsformular verarbeiten
+        document.getElementById('booking-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!currentUser) {
+                document.getElementById('booking-error').style.display = 'block';
+                return;
+            }
+            
+            const service = document.getElementById('service');
+            const serviceText = service.options[service.selectedIndex].text;
+            const servicePrice = service.options[service.selectedIndex].getAttribute('data-price');
+            const date = document.getElementById('booking-date').value;
+            const time = document.getElementById('booking-time').value;
+            
+            // Buchung speichern
+            currentBooking = {
+                id: Date.now(),
+                userId: currentUser.id,
+                service: service.value,
+                serviceText: serviceText,
+                price: servicePrice,
+                date: date,
+                time: time,
+                notes: document.getElementById('notes').value,
+                status: 'pending'
+            };
+            
+            appointments.push(currentBooking);
+            localStorage.setItem('appointments', JSON.stringify(appointments));
+            
+            document.getElementById('booking-confirmation').style.display = 'block';
+            this.reset();
+            
+            // Nach 3 Sekunden Bestätigung ausblenden
+            setTimeout(() => {
+                document.getElementById('booking-confirmation').style.display = 'none';
+            }, 3000);
+        });
+        
+        // Anfrageformular verarbeiten
+        document.getElementById('request-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!currentUser) {
+                alert('Bitte melden Sie sich zuerst an, um eine Anfrage zu stellen.');
+                return;
+            }
+            
+            if (!selectedRequestType) {
+                alert('Bitte wählen Sie eine Art der Anfrage aus.');
+                return;
+            }
+            
+            const title = document.getElementById('request-title').value;
+            const description = document.getElementById('request-description').value;
+            const budget = document.getElementById('request-budget').value;
+            const deadline = document.getElementById('request-deadline').value;
+            
+            // Anfrage speichern
+            const newRequest = {
+                id: Date.now(),
+                userId: currentUser.id,
+                type: selectedRequestType,
+                title: title,
+                description: description,
+                budget: budget,
+                deadline: deadline,
+                status: 'new',
+                date: new Date().toISOString()
+            };
+            
+            requests.push(newRequest);
+            localStorage.setItem('requests', JSON.stringify(requests));
+            
+            document.getElementById('request-confirmation').style.display = 'block';
+            this.reset();
+            resetRequestTypes();
+            
+            // Nach 3 Sekunden Bestätigung ausblenden
+            setTimeout(() => {
+                document.getElementById('request-confirmation').style.display = 'none';
+            }, 5000);
+        });
+        
+        // Anfragentyp auswählen
+        function selectRequestType(type) {
+            selectedRequestType = type;
+            
+            // Alle Anfragentypen zurücksetzen
+            document.querySelectorAll('.request-type').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            // Ausgewählten Typ markieren
+            event.currentTarget.classList.add('selected');
+            
+            // Im versteckten Feld speichern
+            document.getElementById('request-type').value = type;
+        }
+        
+        // Anfragentypen zurücksetzen
+        function resetRequestTypes() {
+            selectedRequestType = null;
+            document.querySelectorAll('.request-type').forEach(el => {
+                el.classList.remove('selected');
+            });
+            document.getElementById('request-type').value = '';
+        }
+        
+        // Preisanzeige aktualisieren
+        function updatePrice() {
+            const service = document.getElementById('service');
+            const price = service.options[service.selectedIndex].getAttribute('data-price') || 0;
+            document.querySelector('.price-display .price').textContent = `${price}€`;
+        }
+        
+        // Avatar-Editor öffnen
+        function openAvatarEditor() {
+            document.getElementById('avatarOverlay').style.display = 'flex';
+        }
+        
+        // Avatar-Editor schließen
+        function closeAvatarEditor() {
+            document.getElementById('avatarOverlay').style.display = 'none';
+        }
+        
+        // Abmelden
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            window.location.reload();
+        });
+        
+        // Avatar-Editor Event Listener
+        document.querySelector('.cancel-avatar').addEventListener('click', closeAvatarEditor);
+        document.querySelector('.confirm-avatar').addEventListener('click', function() {
+            alert('Profilbild wurde aktualisiert!');
+            closeAvatarEditor();
+        });
+        
+        // Datei-Upload für Avatar
+        document.getElementById('avatarUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('avatarPreview').innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Datumseingabe auf zukünftige Tage beschränken
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('booking-date').setAttribute('min', today);
+        document.getElementById('request-deadline').setAttribute('min', today);
+        
+        // Beim Laden der Seite
+        window.addEventListener('load', function() {
+            // Standardbenutzer erstellen, falls keiner vorhanden
+            if (users.length === 0) {
+                const defaultUser = {
+                    id: 1,
+                    firstname: 'Max',
+                    lastname: 'Mustermann',
+                    email: 'max@example.com',
+                    phone: '+49 123 456789',
+                    password: 'password123',
+                    role: 'Premium Kunde'
+                };
+                users.push(defaultUser);
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+            
+            // Wenn kein Benutzer angemeldet ist, Standardbenutzer verwenden
+            if (!currentUser) {
+                currentUser = users[0];
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            }
+            
+            // Benutzerinfo anzeigen
+            document.getElementById('userName').textContent = `${currentUser.firstname} ${currentUser.lastname}`;
+            document.getElementById('userRole').textContent = currentUser.role || 'Kunde';
+        });
+    </script>
+</body>
+</html>
